@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.thymeleaf.engine.IterationStatusVar;
 import org.thymeleaf.expression.*;
 import org.thymeleaf.extras.java8time.expression.Temporals;
-import org.thymeleaf.spring5.ISpringTemplateEngine;
-import org.thymeleaf.spring5.expression.Fields;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.spring5.view.ThymeleafView;
-import org.thymeleaf.spring5.view.reactive.ThymeleafReactiveView;
+import org.thymeleaf.spring6.ISpringTemplateEngine;
+import org.thymeleaf.spring6.expression.Fields;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.view.ThymeleafView;
+import org.thymeleaf.spring6.view.reactive.ThymeleafReactiveView;
 import org.thymeleaf.standard.expression.AdditionExpression;
 import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;

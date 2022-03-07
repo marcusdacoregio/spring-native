@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ import org.springframework.util.ClassUtils;
 public class SecurityHints implements NativeConfiguration {
 	@Override
 	public void computeHints(NativeConfigurationRegistry registry, AotOptions aotOptions) {
-		boolean javaxServletFilterAround = ClassUtils.isPresent("javax.servlet.Filter",null);
+		boolean javaxServletFilterAround = ClassUtils.isPresent("jakarta.servlet.Filter",null);
 		boolean autowiredWebSecurityConfigurersIgnoreParentsAround = ClassUtils.isPresent("org.springframework.security.config.annotation.web.configuration.AutowiredWebSecurityConfigurersIgnoreParents",null);
 		if (javaxServletFilterAround && autowiredWebSecurityConfigurersIgnoreParentsAround) {
-			// This class includes methods that are called via SpEL and in a return value,  nested in generics, is a reference to javax.servlet.Filter
+			// This class includes methods that are called via SpEL and in a return value,  nested in generics, is a reference to jakarta.servlet.Filter
 			registry.reflection().forType(AutowiredWebSecurityConfigurersIgnoreParents.class).withAccess(TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS);
 		}
 	}

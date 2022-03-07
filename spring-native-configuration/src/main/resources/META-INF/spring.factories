@@ -42,7 +42,6 @@ org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndp
 org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfigurationHints,\
 org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfigurationHints,\
 org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfigurationHints,\
-org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpointAutoConfigurationHints,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfigurationHints,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfigurationHints,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusEndpointAutoConfigurationHints,\

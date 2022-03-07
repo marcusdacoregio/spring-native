@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2019 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ import org.springframework.util.Assert;
 @Component
 public class Runner implements CommandLineRunner, Finder<Foo> {
 
-	private static final String GET_FOO = "SELECT VALUE from FOOS where ID=?";
+	private static final String GET_FOO = "SELECT NAME from FOOS where ID=?";
 
-	private static final String ADD_FOO = "INSERT into FOOS (ID, VALUE) values (?, ?)";
+	private static final String ADD_FOO = "INSERT into FOOS (ID, NAME) values (?, ?)";
 
 	private final JdbcTemplate entities;
 

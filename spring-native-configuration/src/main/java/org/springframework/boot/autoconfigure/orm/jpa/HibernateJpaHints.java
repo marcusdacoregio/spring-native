@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,6 @@ import org.hibernate.tuple.entity.EntityTuplizer;
 import org.hibernate.tuple.entity.PojoEntityTuplizer;
 import org.hibernate.type.EnumType;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
-import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.MethodHint;
@@ -66,7 +65,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.EventListener;
 
 @SuppressWarnings("deprecation")
@@ -131,7 +130,7 @@ import java.util.EventListener;
 						PersisterCreationContext.class,
 
 						// related to Naming.applyNamingStrategies
-						SpringImplicitNamingStrategy.class, SpringPhysicalNamingStrategy.class, CamelCaseToUnderscoresNamingStrategy.class,
+						SpringImplicitNamingStrategy.class, CamelCaseToUnderscoresNamingStrategy.class,
 
 						//	HikariDataSource.class,HikariConfig.class,	MVTableEngine.class // pushed to datasource hints
 						NoJtaPlatform.class,

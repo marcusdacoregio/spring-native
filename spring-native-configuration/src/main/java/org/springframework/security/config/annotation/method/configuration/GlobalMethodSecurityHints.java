@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,7 @@ import org.springframework.nativex.hint.TypeHint;
 import org.springframework.nativex.type.NativeConfiguration;
 
 @NativeHint(trigger=GlobalMethodSecurityConfiguration.class, types = {
-		@TypeHint(
-				typeNames= "org.springframework.security.access.expression.method.MethodSecurityExpressionRoot",
-				access = {TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_METHODS, TypeAccess.DECLARED_FIELDS}),
+		@TypeHint(typeNames= "org.springframework.security.access.expression.method.MethodSecurityExpressionRoot", access = TypeAccess.DECLARED_CONSTRUCTORS),
 })
 @NativeHint(jdkProxies = @JdkProxyHint(types = {
 		org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication.class,

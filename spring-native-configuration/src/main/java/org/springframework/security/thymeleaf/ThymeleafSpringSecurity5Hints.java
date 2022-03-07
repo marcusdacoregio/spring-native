@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authoriza
 import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.thymeleaf.extras.springsecurity5.dialect.processor.AuthorizeAttrProcessor;
+import org.thymeleaf.extras.springsecurity6.dialect.processor.AuthorizeAttrProcessor;
 
 @NativeHint(trigger = AuthorizeAttrProcessor.class,
 		types = {

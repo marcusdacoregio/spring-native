@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,10 +63,10 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 
 	private static Log logger = LogFactory.getLog(JpaConfigurationProcessor.class);
 
-	private static final String JPA_ENTITY = "javax.persistence.Entity";
-	private static final String JPA_PERSISTENCE_CONTEXT = "javax.persistence.PersistenceContext";
-	private static final String JPA_ENTITY_LISTENERS = "javax.persistence.EntityListeners";
-	private static final String JPA_CONVERTER = "javax.persistence.Converter";
+	private static final String JPA_ENTITY = "jakarta.persistence.Entity";
+	private static final String JPA_PERSISTENCE_CONTEXT = "jakarta.persistence.PersistenceContext";
+	private static final String JPA_ENTITY_LISTENERS = "jakarta.persistence.EntityListeners";
+	private static final String JPA_CONVERTER = "jakarta.persistence.Converter";
 
 	@Override
 	public void process(ConfigurableListableBeanFactory beanFactory, NativeConfigurationRegistry registry) {
@@ -80,7 +80,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 	}
 
 	/**
-	 * Processor to inspect components for fields that require a {@literal javax.persistence.PersistenceContext}.
+	 * Processor to inspect components for fields that require a {@literal jakarta.persistence.PersistenceContext}.
 	 */
 	static class JpaPersistenceContextProcessor {
 
@@ -94,7 +94,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 	}
 
 	/**
-	 * Processor to inspect {@literal javax.persistence.AttributeConverter} annotated with {@literal javax.persistence.Converter}.
+	 * Processor to inspect {@literal jakarta.persistence.AttributeConverter} annotated with {@literal jakarta.persistence.Converter}.
 	 */
 	static class JpaAttributeConverterProcessor {
 
@@ -150,7 +150,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 	}
 
 	/**
-	 * Processor to inspect user domain types annotated with {@literal javax.persistence.Entity}.
+	 * Processor to inspect user domain types annotated with {@literal jakarta.persistence.Entity}.
 	 */
 	static class JpaEntityProcessor {
 
@@ -170,7 +170,7 @@ public class JpaConfigurationProcessor implements BeanFactoryNativeConfiguration
 					.collect(Collectors.toSet());
 
 			HashSet<String> availableNamespaces = new HashSet<>();
-			availableNamespaces.add("javax.persistence");
+			availableNamespaces.add("jakarta.persistence");
 			jpaImplementations.forEach(it -> availableNamespaces.add(it.getNamespace()));
 			annotationFilter = AnnotationFilter.packages(availableNamespaces.toArray(new String[0]));
 		}

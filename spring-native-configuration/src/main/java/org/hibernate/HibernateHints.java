@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,9 @@ import org.springframework.nativex.hint.TypeHint;
 		},
 		initialization = @InitializationHint(types = {
 				org.hibernate.EntityMode.class,
-				javax.persistence.FetchType.class,
-				javax.persistence.PersistenceContextType.class,
-				javax.persistence.SynchronizationType.class
+				jakarta.persistence.FetchType.class,
+				jakarta.persistence.PersistenceContextType.class,
+				jakarta.persistence.SynchronizationType.class
 		}, initTime = InitializationTime.BUILD)
 )
 public class HibernateHints implements NativeConfiguration {

@@ -24,15 +24,22 @@ import org.springframework.aot.SpringApplicationAotUtils;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.test.util.TestPropertyValues.Type;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.boot.web.servlet.support.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.Ordered;
+import org.springframework.core.PriorityOrdered;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.SmartContextLoader;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -89,13 +96,13 @@ public class AotSpringBootConfigContextLoader extends SpringBootContextLoader {
 		application.setMainApplicationClass(config.getTestClass());
 		application.setSources(Collections.singleton(testContextInitializer.getName()));
 		ConfigurableEnvironment environment = getEnvironment();
-		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
-			setActiveProfiles(environment, config.getActiveProfiles());
+		if (environment != null) {
+			prepareEnvironment(config, application, environment, false);
+			application.setEnvironment(environment);
 		}
-		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, application.getResourceLoader(),
-				config.getPropertySourceLocations());
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(config));
-		application.setEnvironment(environment);
+		else {
+			application.addListeners(new PrepareEnvironmentListener(config));
+		}
 		application.setApplicationContextFactory(SpringApplicationAotUtils.AOT_FACTORY);
 		application.setWebApplicationType(this.webApplicationType);
 
@@ -110,9 +117,7 @@ public class AotSpringBootConfigContextLoader extends SpringBootContextLoader {
 						ApplicationContextFactory.of(GenericReactiveWebApplicationContext::new));
 			}
 		}
-		ConfigurableApplicationContext context = application.run(this.args);
-
-		return context;
+		return application.run(this.args);
 	}
 
 	private boolean isEmbeddedWebEnvironment() {
@@ -120,14 +125,51 @@ public class AotSpringBootConfigContextLoader extends SpringBootContextLoader {
 	}
 
 	// Copy of SpringBootContextLoader
-	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
-		environment.setActiveProfiles(profiles);
-		// Also add as properties to override any application.properties
-		String[] pairs = new String[profiles.length];
-		for (int i = 0; i < profiles.length; i++) {
-			pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
+	private void prepareEnvironment(MergedContextConfiguration config, SpringApplication application,
+			ConfigurableEnvironment environment, boolean applicationEnvironment) {
+		setActiveProfiles(environment, config.getActiveProfiles(), applicationEnvironment);
+		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
+				: new DefaultResourceLoader(null);
+		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
+				config.getPropertySourceLocations());
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(config));
+	}
+
+	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles, boolean applicationEnvironment) {
+		if (!ObjectUtils.isEmpty(profiles)) {
+			if (!applicationEnvironment) {
+				environment.setActiveProfiles(profiles);
+			}
+			String[] pairs = new String[profiles.length];
+			for(int i = 0; i < profiles.length; ++i) {
+				pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
+			}
+			TestPropertyValues.of(pairs).applyTo(environment, Type.MAP, "active-test-profiles");
 		}
-		TestPropertyValues.of(pairs).applyTo(environment);
+	}
+
+	/**
+	 * {@link ApplicationListener} used to prepare the application created environment.
+	 */
+	private class PrepareEnvironmentListener
+			implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, PriorityOrdered {
+
+		private final MergedContextConfiguration config;
+
+		PrepareEnvironmentListener(MergedContextConfiguration config) {
+			this.config = config;
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE;
+		}
+
+		@Override
+		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+			prepareEnvironment(this.config, event.getSpringApplication(), event.getEnvironment(), true);
+		}
+
 	}
 
 	private static class WebConfigurer {

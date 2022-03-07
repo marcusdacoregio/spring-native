@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ import org.springframework.test.web.client.SimpleRequestExpectationManager;
 	types = @TypeHint(typeNames = "org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration$EmbeddedDataSourceFactoryBean"))
 @NativeHint(trigger = MockServerRestTemplateCustomizer.class, types = @TypeHint(types = SimpleRequestExpectationManager.class))
 @NativeHint(trigger = SpringBootTestContextBootstrapper.class, types = {
-	@TypeHint(types = javax.servlet.Servlet.class, access = {}),
+	@TypeHint(types = jakarta.servlet.Servlet.class, access = {}),
 		@TypeHint(types = org.springframework.web.context.ConfigurableWebApplicationContext.class, access = {}),
 		@TypeHint(types = org.springframework.web.servlet.DispatcherServlet.class, access = {}),
 		@TypeHint(types = org.springframework.web.reactive.DispatcherHandler.class, access = {}),

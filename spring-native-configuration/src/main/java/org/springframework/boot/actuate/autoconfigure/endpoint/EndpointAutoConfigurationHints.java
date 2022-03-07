@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.Link;
@@ -47,7 +46,6 @@ import com.fasterxml.jackson.databind.ser.BeanSerializer;
 			EndpointFilter.class,
 			Link.class,
 			BeanSerializer.class,
-			ApiVersion.class,
 			ShutdownEndpoint.class,
 			CloudPlatform.class,
 			OperationInvokerAdvisor.class,

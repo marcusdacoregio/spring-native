@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,31 @@
 
 package org.hibernate.validator;
 
-import javax.validation.ValidatorFactory;
-import javax.validation.bootstrap.GenericBootstrap;
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Negative;
-import javax.validation.constraints.NegativeOrZero;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-import javax.validation.constraints.Size;
+
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.bootstrap.GenericBootstrap;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Negative;
+import jakarta.validation.constraints.NegativeOrZero;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
 import org.apache.logging.log4j.message.ParameterizedMessageFactory;
@@ -305,7 +306,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 @NativeHint(trigger = ValidatorImpl.class,
 		resources = @ResourceHint(patterns="org.hibernate.validator.ValidationMessages", isBundle = true),
 		jdkProxies = @JdkProxyHint(types = {
-				javax.validation.Validator.class,
+				jakarta.validation.Validator.class,
 				org.springframework.aop.SpringProxy.class,
 				org.springframework.aop.framework.Advised.class,
 				org.springframework.core.DecoratingProxy.class
@@ -339,7 +340,7 @@ import org.springframework.nativex.type.NativeConfiguration;
 		}),
 				@TypeHint(types = Messages_$bundle.class, access = { TypeAccess.DECLARED_CONSTRUCTORS, TypeAccess.DECLARED_FIELDS}),
 				@TypeHint(
-					types = javax.validation.Validator.class,
+					types = jakarta.validation.Validator.class,
 					typeNames = "java.lang.Module",
 						access = TypeAccess.DECLARED_CONSTRUCTORS),
 				@TypeHint(types = {

@@ -3,9 +3,9 @@ package app.main;
 import static org.springframework.web.servlet.function.RouterFunctions.route;
 import static org.springframework.web.servlet.function.ServerResponse.ok;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

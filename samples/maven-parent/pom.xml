@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.4</version>
+		<version>3.0.0-SNAPSHOT</version>
 		<relativePath/>
 	</parent>
 	<groupId>org.springframework.experimental</groupId>
@@ -20,10 +20,13 @@
 		<!-- Customize Spring Boot classifier, useful in order to avoid a clash between Spring Boot repackaging and native-image-maven-plugin -->
 		<repackage.classifier/>
 
+		<!-- See https://github.com/spring-projects-experimental/spring-native/issues/1514 -->
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+
 		<!-- `tiny` builder allows small footprint and reduced surface attack, you can also use `base` (the default) or `full` builders to have more tooling available in the image for an improved developer experience -->
 		<builder>paketobuildpacks/builder:tiny</builder>
 
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 
 		<wavefront.version>2.2.0</wavefront.version>
 		<native.buildtools.version>0.9.10</native.buildtools.version>

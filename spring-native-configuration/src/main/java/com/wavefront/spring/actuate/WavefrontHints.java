@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,12 @@ import io.micrometer.core.instrument.config.MeterRegistryConfig;
 import io.micrometer.core.instrument.push.PushMeterRegistry;
 import io.micrometer.core.instrument.push.PushRegistryConfig;
 
-import org.springframework.nativex.hint.TypeAccess;
-import org.springframework.nativex.type.NativeConfiguration;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.ResourceHint;
+import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.TypeHint;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.nativex.type.NativeConfiguration;
 import org.springframework.web.client.RestTemplate;
 
 @NativeHint(trigger = WavefrontAutoConfiguration.class, options = "--enable-https", types = {

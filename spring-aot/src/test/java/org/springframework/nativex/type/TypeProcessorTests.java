@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package org.springframework.nativex.type;
 
-import static org.assertj.core.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,6 +24,7 @@ import java.util.function.BiConsumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
 import org.springframework.aot.NativeTestContext;
 import org.springframework.aot.TestTypeSystem;
 import org.springframework.nativex.hint.AccessBits;
@@ -37,6 +36,8 @@ import org.springframework.nativex.type.entities.MultiLevel0;
 import org.springframework.nativex.type.entities.Order;
 import org.springframework.nativex.type.entities.WithFinalField;
 import org.springframework.nativex.type.entities.WithTypesInMethods;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Christoph Strobl
@@ -81,7 +82,7 @@ class TypeProcessorTests {
 		processor.process(typeSystem.resolve(Order.class), nativeContext);
 
 		assertThat(capturedTypes).containsExactlyInAnyOrder("org.springframework.nativex.type.entities.Order", "java.lang.Long", "java.lang.String", "java.util.List", "org.springframework.nativex.type.entities.LineItem", "java.util.Date");
-		assertThat(capturedAnnotations).contains("javax.persistence.Entity", "javax.persistence.ManyToOne", "javax.persistence.OneToMany", "javax.persistence.GeneratedValue", "org.springframework.nativex.type.entities.SomeAnnotation", "javax.annotation.Nullable", "org.springframework.beans.factory.annotation.Value");
+		assertThat(capturedAnnotations).contains("jakarta.persistence.Entity", "jakarta.persistence.ManyToOne", "jakarta.persistence.OneToMany", "jakarta.persistence.GeneratedValue", "org.springframework.nativex.type.entities.SomeAnnotation", "javax.annotation.Nullable", "org.springframework.beans.factory.annotation.Value");
 	}
 
 	@Test
@@ -107,23 +108,25 @@ class TypeProcessorTests {
 	@Test
 	void includesAnnotationsBasedOnFilter() {
 
-		processor.filterAnnotations(annotation -> annotation.isPartOfDomain("javax."))
+		processor.filterAnnotations(annotation -> annotation.isPartOfDomain("jakarta."))
 				.process(typeSystem.resolve(EntityWithAnnotations.class), nativeContext);
 
 		assertThat(capturedAnnotations)
-				.containsExactlyInAnyOrder("javax.persistence.Entity", "javax.persistence.GeneratedValue")
+				.containsExactlyInAnyOrder("jakarta.persistence.Entity", "jakarta.persistence.GeneratedValue")
 				.doesNotContain("org.springframework.nativex.type.entities.SomeAnnotation");
 	}
 
 	@Test
 	void excludesAnnotationsBasedOnFilter() {
 
-		processor.skipAnnotationsMatching(annotation -> annotation.isPartOfDomain("javax."))
+		processor.skipAnnotationsMatching(annotation -> annotation.isPartOfDomain("jakarta."))
 				.process(typeSystem.resolve(EntityWithAnnotations.class), nativeContext);
 
 		assertThat(capturedAnnotations)
-				.containsExactly("org.springframework.nativex.type.entities.SomeAnnotation")
-				.doesNotContain("javax.persistence.Entity", "javax.persistence.GeneratedValue");
+				.containsExactly("org.springframework.nativex.type.entities.SomeAnnotation",
+						"javax.annotation.Nullable", "javax.annotation.Nonnull",
+						"javax.annotation.meta.TypeQualifier")
+				.doesNotContain("jakarta.persistence.Entity", "jakarta.persistence.GeneratedValue");
 	}
 
 	@Test

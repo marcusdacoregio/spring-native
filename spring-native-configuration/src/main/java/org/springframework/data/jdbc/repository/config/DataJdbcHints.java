@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.data.jdbc.repository.config;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.DataAuditingHints;
 import org.springframework.data.DataNonReactiveAuditingHints;
+import org.springframework.data.relational.auditing.RelationalAuditingCallback;
 import org.springframework.data.relational.core.mapping.event.AfterConvertCallback;
 import org.springframework.data.relational.core.mapping.event.AfterDeleteCallback;
 import org.springframework.data.relational.core.mapping.event.AfterLoadCallback;
@@ -26,7 +27,6 @@ import org.springframework.data.relational.core.mapping.event.AfterSaveCallback;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
 import org.springframework.data.relational.core.mapping.event.BeforeDeleteCallback;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveCallback;
-import org.springframework.data.relational.core.mapping.event.RelationalAuditingCallback;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.nativex.hint.NativeHint;
 import org.springframework.nativex.hint.TypeHint;

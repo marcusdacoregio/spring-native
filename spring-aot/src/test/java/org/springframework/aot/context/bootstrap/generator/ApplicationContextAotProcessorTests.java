@@ -150,7 +150,7 @@ class ApplicationContextAotProcessorTests {
 		ContextBootstrapStructure structure = this.tester.process(ConfigurationPropertiesAutoConfiguration.class);
 		assertThat(structure).contextBootstrapInitializer().removeIndent(2).lines().contains(
 				"BeanDefinitionRegistrar.of(\"org.springframework.boot.context.properties.EnableConfigurationPropertiesRegistrar.methodValidationExcludeFilter\", MethodValidationExcludeFilter.class)",
-				"    .instanceSupplier(() -> MethodValidationExcludeFilter.byAnnotation(ConfigurationProperties.class)).customize((bd) -> bd.setRole(2)).register(beanFactory);");
+				"    .instanceSupplier(() -> MethodValidationExcludeFilter.byAnnotation(ConfigurationProperties.class)).customize((bd) -> {");
 	}
 
 	@Test

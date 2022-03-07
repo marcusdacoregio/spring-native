@@ -20,17 +20,13 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor;
 import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.DefaultNativeReflectionEntry.Builder;
@@ -39,10 +35,12 @@ import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.ExtendedBeanInfoFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.env.Environment;
+import org.springframework.lang.Nullable;
 import org.springframework.nativex.hint.TypeAccess;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -82,42 +80,36 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 
 		private final Class<?> type;
 
-		private final boolean constructorBinding;
+		private final Constructor<?> bindConstructor;
 
 		private final BeanInfo beanInfo;
 
 		private final Set<Class<?>> seen;
 
-		private TypeProcessor(Class<?> type, boolean constructorBinding, Set<Class<?>> seen) {
+		private TypeProcessor(Class<?> type, Constructor<?> bindConstructor, Set<Class<?>> seen) {
 			this.type = type;
-			this.constructorBinding = constructorBinding;
+			this.bindConstructor = bindConstructor;
 			this.beanInfo = getBeanInfo(type);
 			this.seen = seen;
 		}
 
 		public static void processConfigurationProperties(Class<?> type, NativeConfigurationRegistry registry) {
-			new TypeProcessor(type, isConstructorBindingType(type), new HashSet<>()).process(registry);
+			new TypeProcessor(type, getBindConstructor(type, false), new HashSet<>()).process(registry);
 		}
 
 		private void processNestedType(Class<?> type, NativeConfigurationRegistry registry) {
-			processNestedType(type, isConstructorBindingType(type), registry);
+			processNestedType(type, getBindConstructor(type, true), registry);
 		}
 
-		private void processNestedType(Class<?> type, boolean constructorBinding, NativeConfigurationRegistry registry) {
-			new TypeProcessor(type, constructorBinding, this.seen).process(registry);
+		private void processNestedType(Class<?> type, Constructor<?> bindConstructor, NativeConfigurationRegistry registry) {
+			new TypeProcessor(type, bindConstructor, this.seen).process(registry);
 		}
 
-		private static boolean hasConstructorBinding(AnnotatedElement element) {
-			return MergedAnnotations.from(element).isPresent(ConstructorBinding.class);
-		}
-
-		private static boolean isConstructorBindingType(Class<?> type) {
-			return isImplicitConstructorBindingType(type) || hasConstructorBinding(type);
-		}
-
-		private static boolean isImplicitConstructorBindingType(Class<?> type) {
-			Class<?> superclass = type.getSuperclass();
-			return (superclass != null) && "java.lang.Record".equals(superclass.getName());
+		@Nullable
+		private static Constructor<?> getBindConstructor(Class<?> type, boolean nestedType) {
+			Bindable<?> bindable = Bindable.of(type);
+			return ConfigurationPropertiesBindConstructorProvider.INSTANCE
+					.getBindConstructor(bindable, nestedType);
 		}
 
 		private void process(NativeConfigurationRegistry registry) {
@@ -129,10 +121,11 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 			if (isClassOnlyReflectionType()) {
 				return;
 			}
-			reflection.withAccess(TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS); // Flag.allPublicMethods required to handle inherited methods
-			Constructor<?> constructor = handleConstructor(reflection);
-			if (this.constructorBinding && constructor != null) {
-				handleValueObjectProperties(registry, constructor);
+			// Flag.allPublicMethods required to handle inherited methods
+			reflection.withAccess(TypeAccess.DECLARED_METHODS, TypeAccess.PUBLIC_METHODS);
+			handleConstructor(reflection);
+			if (this.bindConstructor != null) {
+				handleValueObjectProperties(registry);
 			}
 			else if (this.beanInfo != null) {
 				handleJavaBeanProperties(registry);
@@ -146,29 +139,37 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 					this.type.equals(Environment.class);
 		}
 
-		private Constructor<?> handleConstructor(Builder reflection) {
-			Constructor<?> bindingConstructor = findBindingConstructor();
-			if (bindingConstructor != null) {
-				reflection.withExecutables(bindingConstructor);
-				return bindingConstructor;
+		private void handleConstructor(Builder reflection) {
+			if (this.bindConstructor != null) {
+				reflection.withExecutables(this.bindConstructor);
 			}
 			else {
-				reflection.withAccess(TypeAccess.DECLARED_CONSTRUCTORS);
-				return null;
+				Constructor<?>[] allConstructors = this.type.getDeclaredConstructors();
+				if (allConstructors.length == 1) {
+					reflection.withExecutables(allConstructors[0]);
+				}
+				else {
+					try {
+						reflection.withExecutables(this.type.getDeclaredConstructor());
+					}
+					catch (NoSuchMethodException ex) {
+						reflection.withAccess(TypeAccess.DECLARED_CONSTRUCTORS);
+					}
+				}
 			}
 		}
 
-		private void handleValueObjectProperties(NativeConfigurationRegistry registry, Constructor<?> constructor) {
-			for (int i = 0; i < constructor.getParameterCount(); i++) {
-				ResolvableType propertyType = ResolvableType.forConstructorParameter(constructor, i);
+		private void handleValueObjectProperties(NativeConfigurationRegistry registry) {
+			for (int i = 0; i < this.bindConstructor.getParameterCount(); i++) {
+				ResolvableType propertyType = ResolvableType.forConstructorParameter(this.bindConstructor, i);
 				Class<?> propertyClass = propertyType.resolve();
-				if (propertyClass.equals(beanInfo.getBeanDescriptor().getBeanClass())) {
+				if (propertyClass == null || propertyClass.equals(beanInfo.getBeanDescriptor().getBeanClass())) {
 					return; // Prevent infinite recursion
 				}
-				processNestedType(propertyType.resolve(), true, registry);
-				Class<?> nestedType = getNestedType(constructor.getParameters()[i].getName(), propertyType);
+				processNestedType(propertyClass, registry);
+				Class<?> nestedType = getNestedType(this.bindConstructor.getParameters()[i].getName(), propertyType);
 				if (nestedType != null) {
-					processNestedType(nestedType, true, registry);
+					processNestedType(nestedType, registry);
 				}
 			}
 		}
@@ -213,30 +214,6 @@ class ConfigurationPropertiesNativeConfigurationProcessor implements BeanFactory
 			}
 			return null;
 		}
-
-		private Constructor<?> findBindingConstructor() {
-			Constructor<?>[] allConstructors = this.type.getDeclaredConstructors();
-			if (allConstructors.length == 1) {
-				return allConstructors[0];
-			}
-			if (this.constructorBinding) {
-				List<Constructor<?>> candidates = Arrays.stream(allConstructors)
-						.filter(TypeProcessor::hasConstructorBinding).collect(Collectors.toList());
-				if (candidates.size() == 1) {
-					return candidates.get(0);
-				}
-			}
-			else {
-				try {
-					return this.type.getDeclaredConstructor();
-				}
-				catch (NoSuchMethodException ex) {
-					// No default constructor
-				}
-			}
-			return null;
-		}
-
 
 		private boolean isNestedConfigurationProperties(Field field) {
 			return MergedAnnotations.from(field).isPresent(NestedConfigurationProperty.class);

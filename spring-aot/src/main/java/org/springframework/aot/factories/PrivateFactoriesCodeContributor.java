@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ class PrivateFactoriesCodeContributor implements FactoriesCodeContributor {
 		String factoryName = factory.getFactory().getName();
 		// TODO shame no ConditionalOnClass on these providers
 		if (factoryName.equals("org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer")) {
-			return ClassUtils.isPresent("javax.validation.ValidationException", context.getClassLoader());
+			return ClassUtils.isPresent("jakarta.validation.ValidationException", context.getClassLoader());
 		} else if (factoryName.equals("org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer")) {
 			return ClassUtils.isPresent("liquibase.exception.ChangeLogParseException", context.getClassLoader());
 		} else if (factoryName.equals("org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer")) {

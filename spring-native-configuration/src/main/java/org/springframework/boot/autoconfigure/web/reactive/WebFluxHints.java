@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ import reactor.netty.DisposableServer;
 		@TypeHint(types = org.apache.tomcat.websocket.server.WsHttpUpgradeHandler.class, access = {}),
 		@TypeHint(types = org.springframework.web.reactive.socket.server.upgrade.TomcatRequestUpgradeStrategy.class)
 })
-@NativeHint(trigger = org.eclipse.jetty.websocket.server.WebSocketServerFactory.class, types = {
-		@TypeHint(types = org.eclipse.jetty.websocket.server.WebSocketServerFactory.class, access = {}),
+@NativeHint(trigger = org.eclipse.jetty.websocket.server.JettyWebSocketServerContainer.class, types = {
+		@TypeHint(types = org.eclipse.jetty.websocket.server.JettyWebSocketServerContainer.class, access = {}),
 		@TypeHint(types = org.springframework.web.reactive.socket.server.upgrade.JettyRequestUpgradeStrategy.class)
 })
 @NativeHint(trigger = io.undertow.websockets.WebSocketProtocolHandshakeHandler.class, types = {
