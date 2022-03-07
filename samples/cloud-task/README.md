@@ -1,1 +1,0 @@
-Very basic Spring Boot project that uses Spring Cloud Task.

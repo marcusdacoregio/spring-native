@@ -90,11 +90,6 @@
 			<artifactId>kafka-avro-serializer</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-function-context</artifactId>
-			<optional>true</optional>
-		</dependency>
 
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
@@ -154,11 +149,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test-autoconfigure</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-context</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
