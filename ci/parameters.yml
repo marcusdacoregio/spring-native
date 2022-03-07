@@ -3,7 +3,7 @@ github-repo-name: "spring-projects-experimental/spring-native"
 docker-hub-organization: "springci"
 artifactory-server: "https://repo.spring.io"
 branch: "main"
-milestone: "0.12.x"
+milestone: "1.0.x"
 build-name: "spring-native"
 concourse-url: "https://ci.spring.io"
 task-timeout: 30m
