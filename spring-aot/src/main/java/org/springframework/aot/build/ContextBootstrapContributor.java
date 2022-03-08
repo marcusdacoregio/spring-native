@@ -20,16 +20,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.build.context.BuildContext;
-import org.springframework.aot.build.context.SourceFiles;
-import org.springframework.aot.context.bootstrap.generator.ApplicationContextAotProcessor;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.DefaultBootstrapWriterContext;
-import org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.NativeConfigurationRegistry;
+import org.springframework.aot.generator.DefaultGeneratedTypeContext;
+import org.springframework.aot.generator.GeneratedType;
 import org.springframework.boot.AotApplicationContextFactory;
+import org.springframework.context.generator.ApplicationContextAotGenerator;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.javapoet.ClassName;
 import org.springframework.nativex.AotOptions;
 import org.springframework.nativex.utils.NativeUtils;
 import org.springframework.util.ClassUtils;
@@ -75,21 +75,15 @@ public class ContextBootstrapContributor implements BootstrapContributor {
 		GenericApplicationContext applicationContext = new AotApplicationContextFactory(resourceLoader)
 				.createApplicationContext(applicationClass);
 		configureEnvironment(applicationContext.getEnvironment());
-		ApplicationContextAotProcessor aotProcessor = new ApplicationContextAotProcessor(classLoader);
-		DefaultBootstrapWriterContext writerContext = new DefaultBootstrapWriterContext("org.springframework.aot", BOOTSTRAP_CLASS_NAME);
-		aotProcessor.process(applicationContext, writerContext);
+		DefaultGeneratedTypeContext generationContext = new DefaultGeneratedTypeContext("org.springframework.aot", (packageName) ->
+				GeneratedType.of(ClassName.get(packageName, BOOTSTRAP_CLASS_NAME)));
+		ApplicationContextAotGenerator aotGenerator = new ApplicationContextAotGenerator();
+		aotGenerator.generateApplicationContext(applicationContext, generationContext);
 		watch.stop();
 		logger.info("Processed " + applicationContext.getBeanFactory().getBeanDefinitionNames().length + " bean definitions in " + watch.getTotalTimeMillis() + "ms");
 
-		writerContext.toJavaFiles().forEach(javaFile -> context.addSourceFiles(SourceFiles.fromJavaFile(javaFile)));
-		NativeConfigurationRegistry nativeConfigurationRegistry = writerContext.getNativeConfigurationRegistry();
-		context.getOptions().addAll(nativeConfigurationRegistry.options());
-		context.describeReflection(reflectionDescriptor -> nativeConfigurationRegistry.reflection().toClassDescriptors().forEach(reflectionDescriptor::merge));
-		context.describeResources(resourcesDescriptor -> resourcesDescriptor.merge(nativeConfigurationRegistry.resources().toResourcesDescriptor()));
-		context.describeProxies(proxiesDescriptor -> proxiesDescriptor.merge(nativeConfigurationRegistry.proxy().toProxiesDescriptor()));
-		context.describeInitialization(initializationDescriptor -> initializationDescriptor.merge(nativeConfigurationRegistry.initialization().toInitializationDescriptor()));
-		context.describeSerialization(serializationDescriptor -> serializationDescriptor.merge(nativeConfigurationRegistry.serialization().toSerializationDescriptor()));
-		context.describeJNIReflection(reflectionDescriptor -> nativeConfigurationRegistry.jni().toClassDescriptors().forEach(reflectionDescriptor::merge));
+		generationContext.toJavaFiles().forEach(javaFile -> context.addSourceFiles(javaFile::writeTo));
+		// TODO: contribute hints
 	}
 
 	private void configureEnvironment(ConfigurableEnvironment environment) {
